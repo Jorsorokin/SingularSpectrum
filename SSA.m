@@ -1,5 +1,41 @@
 classdef SSA < handle
-    
+    % A matlab class for performing Singluar Spectrum Analysis (SSA) on time series data
+    %
+    % SSA decomposes a time series by first embedding the time series into a phase-space trajectory
+    % via time lag (see phaseSpace.m), then performing PCA on the resulting matrix. The principal
+    % components represent principal "modes" found within the time series, which one can use to
+    % guide reconstructon using just a subset of those modes
+    %
+    % USAGE:
+    %   X = rand( 1000,1 );
+    %   L = 250; % # of time points to embed at at time
+    %   percVar = 0.8; % keep 80 % of variance with decomposition
+    %
+    %   ssa = SSA( X )
+    %   ssa.embed( L )
+    %   ssa.decompose( percVar );
+    %   R = ssa.reconstruct(); % <- can provide indices of the principal components to use
+    %
+    % Properties:
+    %   X - the original time series vector or matrix (if matrix, should be column-major)
+    %   embedding - the embedded trajectory
+    %   U - left singular vectors (scores)
+    %   S - singular values
+    %   V - right singular vectors (principal modes)
+    %   groupIDs - vector of IDs, with each unique ID defining a group of similar PCs
+    %   groupFeatures - the features used for clustering the PCs
+    %   varExp - % variance explained from the decomposition
+    %
+    % Methods:
+    %   embed
+    %   decompose
+    %   reconstruct
+    %   groupPCs
+    %   plotReconstruction
+    %
+    % Copyright Jordan Sorokin (jorsorokin@gmail.com), 5/10/18
+    % You are free to use/distribute this code, but please keep a referene to the original author
+    % and code base   
     
     properties(SetAccess = protected)
         X
@@ -143,7 +179,7 @@ classdef SSA < handle
             multisignalplot( self.X,[],'k',yval );
             multisignalplot( R,[],'r',yval );
             ylabel( 'Channels' );
-        end          
+        end           
     end
 end
             
